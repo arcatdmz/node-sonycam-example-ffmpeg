@@ -1,0 +1,29 @@
+{
+  "name": "sonycam-rtmp-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcatdmz/sonycam-rtmp-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arcatdmz/sonycam-rtmp-server/issues"
+  },
+  "homepage": "https://github.com/arcatdmz/sonycam-rtmp-server#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.25",
+    "@types/node-fetch": "^2.6.1",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.3",
+    "prettier": "^2.6.2"
+  }
+}
