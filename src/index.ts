@@ -1,31 +1,31 @@
 import NodeMediaServer from "node-media-server";
-import { ImageResponse, SonyCam } from "./SonyCam";
 import { ChildProcessByStdio, spawn } from "child_process";
-import { JpegHeaderIface, readJpegHeader } from "./readJpegHeader";
 import { Writable } from "stream";
-import { discoverSonyCam } from "./discoverSonyCam";
-import { fetchSonyCamSpec } from "./fetchSonyCamSpec";
+import {
+  discoverSonyDevice,
+  fetchSonyCamSpec,
+  findSonyCamUrl,
+  JpegHeader,
+  readJpegHeader,
+  SonyCam,
+  SonyCamImageResponse,
+} from "node-sonycam";
 
 const enableRtmpServer = false;
 const freeRunDuration = 30000;
 
 // Step 1. discover Sony camera service
 
-const location = await discoverSonyCam();
+const location = await discoverSonyDevice();
 console.log("Discovered service spec location:", location);
 
 const spec = await fetchSonyCamSpec(location);
-const serviceUrl =
-  spec.device["av:X_ScalarWebAPI_DeviceInfo"]["av:X_ScalarWebAPI_ServiceList"][
-    "av:X_ScalarWebAPI_Service"
-  ].find((service) => service["av:X_ScalarWebAPI_ServiceType"] === "camera")[
-    "av:X_ScalarWebAPI_ActionList_URL"
-  ] + "/camera";
-console.log("Camera service URL:", serviceUrl);
+const serviceUrl = findSonyCamUrl(spec);
+console.log("Found Sony camera service url:", serviceUrl);
 
 // Step 2. prepare connection and image listener
 
-const sonyCam = new SonyCam();
+const sonyCam = new SonyCam(serviceUrl);
 await sonyCam.connect();
 
 let nms: NodeMediaServer;
@@ -38,10 +38,10 @@ if (sonyCam.availableApiList.includes("getSupportedLiveviewSize")) {
   );
 }
 
-let jpegHeader: JpegHeaderIface,
+let jpegHeader: JpegHeader,
   interval: number | null = null,
   received = 0;
-const imageListener = ({ data }: ImageResponse) => {
+const imageListener = ({ data }: SonyCamImageResponse) => {
   // fs.writeFileSync(`${frameNumber}.jpeg`, data);
 
   if (!interval) {
